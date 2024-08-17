@@ -18,6 +18,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  pre-commit:
+    name: ✅ pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+
   linter:
     name: 🧹 Linter
     runs-on: ubuntu-latest
@@ -38,7 +47,7 @@ jobs:
         run: make lint
 
   tests:
-    needs: linter
+    needs: [pre-commit, linter]
     strategy:
       fail-fast: false
       matrix:
