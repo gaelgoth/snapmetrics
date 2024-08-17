@@ -1,6 +1,9 @@
 import sys
 
 import pytest
+from typer.testing import CliRunner
+
+from snapmetrics.cli import cli
 
 
 # each test runs on cwd to its temp dir
@@ -13,3 +16,13 @@ def go_to_tmpdir(request):
     # Chdir only for the duration of the test.
     with tmpdir.as_cwd():
         yield
+
+
+@pytest.fixture(scope="function", name="cli")
+def _cli():
+    return cli
+
+
+@pytest.fixture(scope="function")
+def cli_client():
+    return CliRunner()
