@@ -8,13 +8,13 @@ on:
       - "requirements.txt"
       - "setup.py"
       - ".github/workflows/**"
-  pull_request:
-    # branches: [main]
-    paths:
-      - "**.py"
-      - "requirements.txt"
-      - "setup.py"
-      - ".github/workflows/**"
+  # pull_request:
+  #   # branches: [main]
+  #   paths:
+  #     - "**.py"
+  #     - "requirements.txt"
+  #     - "setup.py"
+  #     - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
