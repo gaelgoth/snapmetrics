@@ -8,21 +8,20 @@ Be creative! do whatever you want!
 - Import things from your .base module
 """
 
+from snapmetrics import base
+
 
 def main():  # pragma: no cover
-    """
-    The main function executes on commands:
-    `python -m snapmetrics` and `$ snapmetrics `.
+    print("Start Colorgram")
 
-    This is your program's entry point.
+    font_path = "./static/JetBrainsMonoNerdFontMono-Regular"
+    processor = base.ImageProcessor(font_path)
 
-    You can change this function to do whatever you want.
-    Examples:
-        * Run a test suite
-        * Run a server
-        * Do some other stuff
-        * Run a command line application (Click, Typer, ArgParse)
-        * List all available tasks
-        * Run an application (Flask, FastAPI, Django, etc.)
-    """
-    print("This will do something")
+    info = base.ImageInfo(
+        camera="Canon AF35M", lens="38mm 1:28", settings="Kodak 400 Ultra Max"
+    )
+
+    result_image = processor.process_image("./static/image.jpg", info, margin=100)
+
+    result_image.save("./static/output_image_with_info.jpg")
+    result_image.show()
