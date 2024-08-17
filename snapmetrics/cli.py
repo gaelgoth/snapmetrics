@@ -8,7 +8,17 @@ Be creative! do whatever you want!
 - Import things from your .base module
 """
 
+import typer
+
 from snapmetrics import base
+
+cli = typer.Typer(name=f"{base.NAME} CLI")
+
+
+@cli.command()
+def run():
+    """Run snapmetrics CLI."""
+    print("Test CLI")
 
 
 def main():  # pragma: no cover
