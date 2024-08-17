@@ -27,14 +27,14 @@ install:          ## Install the project in dev mode.
 .PHONY: fmt
 fmt:              ## Format code using black & isort.
 	$(ENV_PREFIX)isort snapmetrics/
-	$(ENV_PREFIX)black -l 79 snapmetrics/
-	$(ENV_PREFIX)black -l 79 tests/
+	$(ENV_PREFIX)black -l 90 snapmetrics/
+	$(ENV_PREFIX)black -l 90 tests/
 
 .PHONY: lint
 lint:             ## Run pep8, black, mypy linters.
-	$(ENV_PREFIX)flake8 snapmetrics/
-	$(ENV_PREFIX)black -l 79 --check snapmetrics/
-	$(ENV_PREFIX)black -l 79 --check tests/
+	$(ENV_PREFIX)flake8 --max-line-length=90 snapmetrics/
+	$(ENV_PREFIX)black -l 90 --check snapmetrics/
+	$(ENV_PREFIX)black -l 90 --check tests/
 	$(ENV_PREFIX)mypy --ignore-missing-imports snapmetrics/
 
 .PHONY: test
