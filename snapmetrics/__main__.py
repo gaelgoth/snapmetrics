@@ -1,6 +1,7 @@
-"""Entry point for snapmetrics."""
+# pragma: no cover
+from .cli import cli
 
-from snapmetrics.cli import main  # pragma: no cover
+main = cli
 
 if __name__ == "__main__":  # pragma: no cover
     main()

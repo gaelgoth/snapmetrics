@@ -1,2 +1,3 @@
 Pillow==10.4.0
 Pylette==3.0.1
+typer==0.12.4
