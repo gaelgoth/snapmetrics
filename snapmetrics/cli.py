@@ -21,11 +21,12 @@ def run():
     print("Test CLI")
 
 
-def main():  # pragma: no cover
+@cli.command()
+def produce_image():  # pragma: no cover
     print("Start Colorgram")
 
-    font_path = "./static/JetBrainsMonoNerdFontMono-Regular"
-    processor = base.ImageProcessor(font_path)
+    # font_path = "./static/JetBrainsMonoNerdFontMono-Regular"
+    processor = base.ImageProcessor()
 
     info = base.ImageInfo(
         camera="Canon AF35M", lens="38mm 1:28", settings="Kodak 400 Ultra Max"

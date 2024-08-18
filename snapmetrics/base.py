@@ -5,13 +5,17 @@ This is the principal module of the snapmetrics project.
 """
 
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Optional, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Resampling
 from Pylette import extract_colors
 
 NAME = "snapmetrics"
+FONT_SIZE = 36  # TODO: set as params
+FONT_SIZE_SUBTILE = 36 - 8
+
+FontType = Union[ImageFont.FreeTypeFont, ImageFont.ImageFont]
 
 
 @dataclass
@@ -28,7 +32,7 @@ class Dimensions:
 
 
 class ImageProcessor:
-    def __init__(self, font_path: str):
+    def __init__(self, font_path: Optional[str] = None):
         self.font_path = font_path
         self.dimensions = Dimensions(1080, 1920)
 
@@ -76,11 +80,18 @@ class ImageProcessor:
 
     def _load_fonts(
         self,
-    ) -> Tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont]:
-        font_size = 36
+    ) -> Tuple[
+        Union[ImageFont.FreeTypeFont, ImageFont.ImageFont],
+        Union[ImageFont.FreeTypeFont, ImageFont.ImageFont],
+    ]:
+        if self.font_path:
+            return (
+                ImageFont.truetype(self.font_path, FONT_SIZE),
+                ImageFont.truetype(self.font_path, FONT_SIZE_SUBTILE),
+            )
         return (
-            ImageFont.truetype(self.font_path, font_size),
-            ImageFont.truetype(self.font_path, font_size - 8),
+            ImageFont.load_default(size=FONT_SIZE),
+            ImageFont.load_default(size=FONT_SIZE_SUBTILE),
         )
 
     def _resize_original_image(self, original_image: Image.Image) -> Image.Image:
@@ -103,7 +114,7 @@ class ImageProcessor:
         self,
         draw: ImageDraw.ImageDraw,
         info: ImageInfo,
-        fonts: Tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
+        fonts: Tuple[FontType, FontType],
         margin: int,
         image_position: Tuple[int, int],
     ) -> dict:
@@ -123,7 +134,7 @@ class ImageProcessor:
         self,
         draw: ImageDraw.ImageDraw,
         info: ImageInfo,
-        fonts: Tuple[ImageFont.FreeTypeFont, ImageFont.FreeTypeFont],
+        fonts: Tuple[FontType, FontType],
         positions: dict,
     ):
         font, small_font = fonts

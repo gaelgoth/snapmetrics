@@ -1,5 +1,5 @@
 import pytest
-from PIL import Image
+from PIL import Image, ImageFont
 
 from snapmetrics.base import NAME, Dimensions, ImageInfo, ImageProcessor
 
@@ -13,13 +13,30 @@ def image_processor():
     return ImageProcessor("path/to/test/font.ttf")
 
 
-def test_image_processor_init(image_processor):
+def test_image_processor_with_font_init(image_processor):
     assert isinstance(image_processor, ImageProcessor)
     assert image_processor.font_path == "path/to/test/font.ttf"
 
     assert isinstance(image_processor.dimensions, Dimensions)
     assert image_processor.dimensions.width == 1080
     assert image_processor.dimensions.height == 1920
+
+
+def test_image_processor_no_font_init():
+    image_processor = ImageProcessor()
+
+    assert isinstance(image_processor, ImageProcessor)
+    assert image_processor.font_path is None
+
+    assert isinstance(image_processor.dimensions, Dimensions)
+    assert image_processor.dimensions.width == 1080
+    assert image_processor.dimensions.height == 1920
+
+    fonts = image_processor._load_fonts()
+    assert isinstance(fonts, tuple)
+    assert len(fonts) == 2
+    # default font from PIL
+    assert all(isinstance(font, ImageFont.FreeTypeFont) for font in fonts)
 
 
 def test_create_base_image(image_processor):
