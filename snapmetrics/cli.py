@@ -16,21 +16,21 @@ cli = typer.Typer(name=f"{base.NAME} CLI")
 
 
 @cli.command()
-def run():
+def run(
+    camera_name: str = "Default Camera Name",
+    lens: str = "Default lens Name",
+    settings: str = "Default settings",
+):  # pragma: no cover
     """Run snapmetrics CLI."""
-    print("Test CLI")
+    print("Start snapmetrics CLI")
 
-
-@cli.command()
-def produce_image():  # pragma: no cover
-    print("Start Colorgram")
+    print(f"--camera-name is {camera_name}, --lens is {lens}, --settings is {settings}")
 
     # font_path = "./static/JetBrainsMonoNerdFontMono-Regular"
     processor = base.ImageProcessor()
-
-    info = base.ImageInfo(
-        camera="Canon AF35M", lens="38mm 1:28", settings="Kodak 400 Ultra Max"
-    )
+    # TODO: Handle default values
+    # TODO: Read image EXIF
+    info = base.ImageInfo(camera=camera_name, lens=lens, settings=settings)
 
     result_image = processor.process_image("./static/image.jpg", info, margin=100)
 
