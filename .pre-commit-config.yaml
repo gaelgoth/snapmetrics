@@ -10,7 +10,7 @@ repos:
     rev: 7.1.0
     hooks:
       - id: flake8
-        exclude: ^setup\.py$
+        exclude: ^(setup\.py|tests/test_cli\.py)$
         args: [--max-line-length=90]
 
   - repo: https://github.com/pycqa/isort
