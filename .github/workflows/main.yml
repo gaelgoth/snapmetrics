@@ -66,18 +66,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+
       - name: Install Pip
         if: matrix.os == 'windows-latest'
         run: pip install --user --upgrade pip
+
       - name: Install project
         run: |
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
@@ -86,6 +90,7 @@ jobs:
             make install
           fi
         shell: bash
+
       - name: Run tests
         run: |
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
@@ -93,6 +98,20 @@ jobs:
           else
             make test
           fi
+        shell: bash
+
+      - name: SonarCloud Scan
+        if: matrix.os == 'ubuntu-latest'
+        uses: SonarSource/sonarcloud-github-action@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Run ls
+        run: |
+          tree .
+          ls -alh
+          pwd
         shell: bash
       # - name: Upload coverage to Codecov # TODO: Replace by SonarQube
       #   uses: codecov/codecov-action@v4
