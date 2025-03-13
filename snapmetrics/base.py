@@ -4,10 +4,11 @@ snapmetrics base module.
 This is the principal module of the snapmetrics project.
 """
 
+import os
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import ExifTags, Image, ImageDraw, ImageFont
 from PIL.Image import Resampling
 from Pylette import extract_colors
 
@@ -35,6 +36,85 @@ class ImageProcessor:
     def __init__(self, font_path: Optional[str] = None):
         self.font_path = font_path
         self.dimensions = Dimensions(1080, 1920)
+
+    def extract_exif(self, image_path: str) -> Dict[str, Any]:
+        """
+        Extract EXIF data from an image file and return formatted camera info.
+
+        Args:
+            image_path: Path to the image file
+
+        Returns:
+            Dictionary containing camera_name, lens, and settings information
+        """
+        if not os.path.exists(image_path):
+            return {
+                "camera_name": "Image not found",
+                "lens": "Image not found",
+                "settings": "Image not found",
+            }
+
+        try:
+            with Image.open(image_path) as img:
+                exif_data = {}
+                if hasattr(img, "_getexif") and img._getexif() is not None:
+                    for tag_id, value in img._getexif().items():
+                        tag = ExifTags.TAGS.get(tag_id, tag_id)
+                        exif_data[tag] = value
+
+                if not exif_data:
+                    return {
+                        "camera_name": "No EXIF data",
+                        "lens": "No EXIF data",
+                        "settings": "No EXIF data",
+                    }
+
+                make = exif_data.get("Make", "")
+                model = exif_data.get("Model", "")
+                camera_name = f"{make} {model}".strip() or "Unknown Camera"
+
+                lens = exif_data.get("LensModel", exif_data.get("Lens", "Unknown Lens"))
+
+                aperture = exif_data.get("FNumber", None)
+                if (
+                    aperture is not None
+                    and isinstance(aperture, tuple)
+                    and len(aperture) == 2
+                ):
+                    aperture = f"f/{aperture[0]/aperture[1]:.1f}"
+                else:
+                    aperture = "Unknown Aperture"
+
+                exposure_time = exif_data.get("ExposureTime", None)
+                if (
+                    exposure_time is not None
+                    and isinstance(exposure_time, tuple)
+                    and len(exposure_time) == 2
+                ):
+                    if exposure_time[0] >= exposure_time[1]:
+                        shutter_speed = f"{exposure_time[0]/exposure_time[1]:.1f}s"
+                    else:
+                        shutter_speed = f"1/{exposure_time[1]/exposure_time[0]:.0f}s"
+                else:
+                    shutter_speed = "Unknown Shutter Speed"
+
+                iso = exif_data.get("ISOSpeedRatings", "Unknown ISO")
+
+                settings = f"{aperture}, {shutter_speed}, ISO {iso}"
+
+                return {
+                    "camera_name": camera_name,
+                    "lens": lens,
+                    "settings": settings,
+                    "raw_exif": exif_data,  # Include raw data for debugging
+                }
+
+        except Exception as e:
+            return {
+                "camera_name": f"EXIF Error: {str(e)}",
+                "lens": "EXIF Error",
+                "settings": "EXIF Error",
+            }
 
     def process_image(
         self,
